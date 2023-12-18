@@ -1,6 +1,7 @@
 import os
+
 import pandas as pd
-from data_loader import drop_columns, load_data
+from data_loader import drop_columns, get_database_data
 from data_preprocessing import (
     handle_dates,
     handle_outliers,
@@ -8,15 +9,13 @@ from data_preprocessing import (
     log_transform_numerical,
     one_hot_encode,
 )
+from email_notifier import send_email
 from model import evaluate_model, train_xgboost_model
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-from email_notifier import send_email
 
 # Import the data
-wd = os.getcwd()
-input_data = os.path.join(wd, "churn_prediction", "Dataset", "data_churn_model.csv")
-df = load_data(input_data)
+df = get_database_data("get_data_churn")
 
 # Data Preprocessing
 df = drop_columns(df)
@@ -57,5 +56,5 @@ if float(recall_churn_class) < 0.8:
         "smtp.your_email_provider.com",
         465,  # SMTP port (use SSL)
         "mike@gmail.com",
-        "mike_email_password"
+        "mike_email_password",
     )
