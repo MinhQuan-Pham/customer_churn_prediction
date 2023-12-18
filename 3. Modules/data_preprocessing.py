@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 def impute_referral_role(df):
     df['referral_role'].fillna("not participated", inplace=True)

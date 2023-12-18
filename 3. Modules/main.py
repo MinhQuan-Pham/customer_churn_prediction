@@ -1,14 +1,21 @@
-from data_loader import load_data, drop_columns
-from data_preprocessing import impute_referral_role, handle_outliers, handle_dates, one_hot_encode, log_transform_numerical
-from model import train_xgboost_model, evaluate_model
-from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split
 import os
 import pandas as pd
+from data_loader import drop_columns, load_data
+from data_preprocessing import (
+    handle_dates,
+    handle_outliers,
+    impute_referral_role,
+    log_transform_numerical,
+    one_hot_encode,
+)
+from model import evaluate_model, train_xgboost_model
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from email_notifier import send_email
 
 # Import the data
 wd = os.getcwd()
-input_data = os.path.join(wd, 'churn_prediction', 'Dataset', 'data_churn_model.csv')
+input_data = os.path.join(wd, "churn_prediction", "Dataset", "data_churn_model.csv")
 df = load_data(input_data)
 
 # Data Preprocessing
@@ -20,11 +27,13 @@ df_encoded = one_hot_encode(df)
 df = log_transform_numerical(df)
 
 # Concatenate numerical and encoded categorical features
-X = pd.concat([df.select_dtypes(exclude=['object']), df_encoded], axis=1)
+X = pd.concat([df.select_dtypes(exclude=["object"]), df_encoded], axis=1)
 y = df["is_churn"]
 
 # Split the dataset into training and testing sets with stratification
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
 
 # Train XGBoost model
 xgb_model = train_xgboost_model(X_train, y_train)
@@ -38,3 +47,15 @@ print(f"Recall for Churn: {recall_churn_class}")
 print()  # print a blank line
 print("Classification Report")
 print(classification_report(y_test, y_pred, target_names=["Not Churn", "Churn"]))
+
+# Trigger an email alert if recall for Churn falls below a certain value
+if float(recall_churn_class) < 0.8:
+    send_email(
+        "Alert: Churn Recall Below Threshold",
+        "Churn recall is below the acceptable threshold. Please investigate.",
+        "mike@gmail.com",
+        "smtp.your_email_provider.com",
+        465,  # SMTP port (use SSL)
+        "mike@gmail.com",
+        "mike_email_password"
+    )
