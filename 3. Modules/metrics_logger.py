@@ -1,24 +1,18 @@
-import pandas as pd
 from datetime import datetime
 
-
-def log_metrics_to_excel(classification_report, file_path):
-    # Parse the classification report and create a DataFrame
-    report_data = []
-    lines = classification_report.split("\n")
-
+def log_metrics_to_txt(classification_report, file_path):
+    # Parse the classification report
+    lines = classification_report.split('\n')
+    
     # Extract the date
     current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    for line in lines[2:-4]:  # Exclude headers and support information
-        row_data = line.split()
-        metric_name = row_data[0]
-        values = [float(x) for x in row_data[1:]]
-        report_data.append([current_date, metric_name] + values)
+    # Prepare log data
+    log_data = [f"Date: {current_date}"]
+    log_data.extend(lines[2:-4])  # Exclude headers and support information
 
-    # Create a DataFrame
-    columns = ["Date", "Metric", "Precision", "Recall", "F1-Score", "Support"]
-    metrics_df = pd.DataFrame(report_data, columns=columns)
-
-    # Save the DataFrame to an Excel file
-    metrics_df.to_excel(file_path, index=False)
+    # Write the log data to a text file
+    with open(file_path, 'a') as file:
+        for line in log_data:
+            file.write(line + '\n')
+        file.write('\n')  # Add a blank line for better readability

@@ -10,7 +10,7 @@ from data_preprocessing import (
     one_hot_encode,
 )
 from email_notifier import send_email
-from metrics_logger import log_metrics_to_excel
+from metrics_logger import log_metrics_to_txt
 from model import evaluate_model, train_xgboost_model
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
@@ -53,8 +53,8 @@ def main():
     )
     print(classification_report_str)
 
-    # Log metrics to an Excel file
-    log_metrics_to_excel(classification_report_str, "performance_monitoring.xlsx")
+    # Log metrics to a text file
+    log_metrics_to_txt(classification_report_str, "performance_monitoring.txt")
 
     # Trigger an email alert if recall for Churn falls below a certain value
     if float(recall_churn_class) < 0.8:
@@ -63,7 +63,7 @@ def main():
             "Churn recall is below the acceptable threshold. Please investigate.",
             "mike@gmail.com",
             "smtp.email_provider.com",
-            465,  # SMTP port (use SSL)
+            465, # SMTP port (use SSL)
             "mike@gmail.com",
             "mike_email_password",
         )
