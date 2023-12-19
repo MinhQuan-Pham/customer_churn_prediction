@@ -11,7 +11,8 @@
 - Modules: The modules folder contains organized Python code that is utilized in the notebooks for specific tasks, such as data loading or data preprocessing.
 
 ## Model Monitoring
-- An email notifier module has been implemented to send an alert email whenever the performance drops below 80% (Recall Class 1 < 0.8)
+- Loggers module has been implemented to log the model's performance into a flat file for future monitoring and reference
+- Email notifier module has been implemented to send an alert email whenever the performance drops below 80% (Recall Class 1 < 0.8)
 
 ## License
 This project is licensed under the MIT License.
